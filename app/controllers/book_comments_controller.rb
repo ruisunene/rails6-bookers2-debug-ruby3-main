@@ -1,15 +1,24 @@
 class BookCommentsController < ApplicationController
+
+
   def create
+
     book = Book.find(params[:book_id])
     comment = current_user.book_comments.new(book_comment_params)
     comment.book_id = book.id
     comment.save
-    redirect_to book_path(book)
+    redirect_to request.referer #元のURLに遷移するコード
+    #else
+      #@error_comment = comment
+      #@book = Book.find(params[:book_id])
+      #@book_comment = Book.new
+      #render :'books/show'
+    #end
   end
 
   def destroy
-    BookComment.find(params[:id]).destroy
-    redirect_to book_path(params[:book_id])
+    BookComment.find_by(id: params[:id], book_id: params[:book_id]).destroy#find(params[:id]).destroy
+    redirect_to  request.referer
   end
 
   private
