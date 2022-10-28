@@ -18,13 +18,27 @@ class User < ApplicationRecord
   validates :name,presence: true,length: { minimum: 2, maximum: 20 }, uniqueness: true
   validates :introduction, length: { maximum: 50 }
 
-
+    #プロフィール画像を設定してない人はno_image.jpgが表示される
   def get_profile_image
     (profile_image.attached?) ? profile_image : 'no_image.jpg'
   end
-
+    #フォローしているユーザーか確認する？だったかな
   def followed_by?(user)
     passive_relationships.find_by(following_id: user.id).present?
+  end
+
+  def self.looks(search, word)
+    if search == "perfect_match"
+      @user = User.where("name LIKE?", "#{word}")
+    elsif search == "forward_match"
+      @user = User.where("name LIKE?","#{word}%")
+    elsif search == "backward_match"
+      @user = User.where("name LIKE?","%#{word}")
+    elsif search == "partial_match"
+      @user = User.where("name LIKE?","%#{word}%")
+    else
+      @user = User.all
+    end
   end
 
 end
